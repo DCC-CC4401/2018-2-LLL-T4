@@ -1,6 +1,10 @@
 from django.db import models
 
 
+# Aquí estan los modelos de datos. Falta asociar el usuario a la persona natural. Esto se puede hacer con lo siguiente:
+# https://stackoverflow.com/questions/34875146/foreignkey-to-a-model-field .
+# Lo otro que falta es agregar un modelo de datos para las respuestas a las preguntas.
+
 class CursoNombre(models.Model):
     nombre = models.CharField(max_length=255)
     codigo = models.CharField(max_length=20, primary_key=True)
@@ -101,4 +105,3 @@ class AlumnoCoevaluacion(models.Model):
 
     class Meta:
         unique_together = (('alumno', 'coevaluacion'),)
-
