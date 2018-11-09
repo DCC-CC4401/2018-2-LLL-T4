@@ -3,7 +3,6 @@ from django.db import models
 
 # Aquí estan los modelos de datos. Falta asociar el usuario a la persona natural. Esto se puede hacer con lo siguiente:
 # https://stackoverflow.com/questions/34875146/foreignkey-to-a-model-field .
-# Lo otro que falta es agregar un modelo de datos para las respuestas a las preguntas.
 
 class CursoNombre(models.Model):
     nombre = models.CharField(max_length=255)
@@ -61,6 +60,11 @@ class Pregunta(models.Model):
         unique_together = (('descripcion', 'coevaluacion'),)
 
 
+class Respuesta(models.Model):
+    pregunta = models.ForeignKey(Pregunta, on_delete=models.CASCADE)
+    valor = models.TextField()
+
+
 class PersonaNatural(models.Model):
     RUT = models.CharField(max_length=30, primary_key=True)
     correo = models.CharField(max_length=255)
@@ -105,3 +109,8 @@ class AlumnoCoevaluacion(models.Model):
 
     class Meta:
         unique_together = (('alumno', 'coevaluacion'),)
+
+
+class AlumnoRespuesta(models.Model):
+    respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
+    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
