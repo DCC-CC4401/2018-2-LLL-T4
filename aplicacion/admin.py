@@ -2,11 +2,10 @@ from django.contrib import admin
 from .models import *
 
 admin.site.register(Curso)
-admin.site.register(CursoNombre)
+admin.site.register(CursoDatos)
 admin.site.register(Grupo)
 admin.site.register(Coevaluacion)
 admin.site.register(Pregunta)
-admin.site.register(PersonaNatural)
 admin.site.register(Alumno)
 admin.site.register(Docente)
 admin.site.register(DocenteCurso)

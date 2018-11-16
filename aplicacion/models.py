@@ -1,10 +1,11 @@
+from django.conf import settings
 from django.db import models
 
 
 # Aquí estan los modelos de datos. Falta asociar el usuario a la persona natural. Esto se puede hacer con lo siguiente:
 # https://stackoverflow.com/questions/34875146/foreignkey-to-a-model-field .
 
-class CursoNombre(models.Model):
+class CursoDatos(models.Model):
     nombre = models.CharField(max_length=255)
     codigo = models.CharField(max_length=20, primary_key=True)
 
@@ -13,16 +14,16 @@ class CursoNombre(models.Model):
 
 
 class Curso(models.Model):
-    codigo = models.ForeignKey(CursoNombre, on_delete=models.CASCADE)
-    semestre = models.CharField(max_length=255)
+    datos = models.ForeignKey(CursoDatos, on_delete=models.CASCADE)
+    semestre = models.IntegerField()
     seccion = models.IntegerField()
     ano = models.IntegerField()
 
     def __str__(self):
-        return self.codigo.codigo + ' ' + self.semestre + ' ' + str(self.seccion) + ' ' + str(self.ano)
+        return self.datos.codigo + ' ' + str(self.semestre) + ' ' + str(self.seccion) + ' ' + str(self.ano)
 
     class Meta:
-        unique_together = (('codigo', 'semestre', 'seccion', 'ano'),)
+        unique_together = (('datos', 'semestre', 'seccion', 'ano'),)
 
 
 class Grupo(models.Model):
@@ -31,7 +32,7 @@ class Grupo(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.numero) + ' ' + self.nombre + ' ' + self.curso.codigo.nombre + ' ' + str(self.curso.ano)
+        return str(self.numero) + ' ' + self.nombre + ' ' + self.curso.datos.nombre + ' ' + str(self.curso.ano)
 
     class Meta:
         unique_together = (('numero', 'curso'), ('nombre', 'curso'))
@@ -45,7 +46,7 @@ class Coevaluacion(models.Model):
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.nombre + ' ' + self.curso.codigo.nombre + ' ' + str(self.curso.ano)
+        return self.nombre + ' ' + self.curso.datos.nombre + ' ' + str(self.curso.ano)
 
     class Meta:
         unique_together = (('nombre', 'curso'),)
@@ -65,18 +66,12 @@ class Respuesta(models.Model):
     valor = models.TextField()
 
 
-class PersonaNatural(models.Model):
-    RUT = models.CharField(max_length=30, primary_key=True)
-    correo = models.CharField(max_length=255)
-    nombre = models.CharField(max_length=255)
-
-
 class Alumno(models.Model):
-    personaNatural = models.OneToOneField(PersonaNatural, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
 
 
 class Docente(models.Model):
-    personaNatural = models.OneToOneField(PersonaNatural, on_delete=models.CASCADE, primary_key=True)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, primary_key=True)
 
 
 class AlumnoCurso(models.Model):
