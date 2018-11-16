@@ -7,7 +7,6 @@ from aplicacion.models import Curso, AlumnoCurso, Alumno
 
 def login_view(request):
     if request.method == 'POST':
-        print("if")
         username = request.POST['user']
         password = request.POST['password']
         user = authenticate(request, username=username, password=password)
@@ -17,7 +16,6 @@ def login_view(request):
         else:
             return render(request, 'login.html')
     else:
-        print("else")
         return render(request, 'login.html')
 
 
