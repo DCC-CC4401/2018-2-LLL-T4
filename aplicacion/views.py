@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 
@@ -7,16 +7,18 @@ from aplicacion.models import Curso, AlumnoCurso, Alumno
 
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        print(form.get_user())
-
-        if form.is_valid():
-            user = form.get_user()
+        print("if")
+        username = request.POST['user']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
             login(request, user)
             return redirect('landingpagealumnos')
+        else:
+            return render(request, 'login.html')
     else:
-        form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+        print("else")
+        return render(request, 'login.html')
 
 
 def landingPageAlumnos_view(request):

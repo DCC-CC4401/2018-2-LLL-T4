@@ -1,6 +1,5 @@
 
 {% load static %}
-{% load crispy_forms_tags %}
 
 <!DOCTYPE html>
     <html lang="es">
@@ -30,14 +29,15 @@
 
         <!-- Cuerpo -->
         <div class="container text-center"> <!-- Contenedor responsivo, se adapta a la pantalla con puntos de quiebre. -->
-            <form class= "site-form" action = "{% url 'login' %}" method="post">
+           <form class="form-signin" method="POST">
                 {% csrf_token %}
                 <h1 class="mt-5 mb-3">Bienvenid@</h1>
                 <h3 class="font-weight-normal mb-3">Inicia sesión para acceder</h3>
                 <p class="mb-2">Ingresa con tu RUT y contraseña</p>
-                <label for="username" class="sr-only">RUT</label>
-                {{ form.username|as_crispy_field}}
-                {{ form.password|as_crispy_field}}
+                <label for="user" class="sr-only">RUT</label>
+                <input type="text" id="user" name="user" class="form-control" placeholder="RUT" required autofocus>
+                <label for="password" class="sr-only">Contraseña</label>
+                <input type="password" id="password" name="password" class="form-control" placeholder="Contraseña" required>
                 <button class="btn btn-lg btn-primary-custom px-5 mt-3" type="submit">Ingresar</button>
                 <p class="mt-4 text-muted small">¿No has recibido tu contraseña?<br>¡Contacta a tu profesor/administrador!</p>
             </form>
