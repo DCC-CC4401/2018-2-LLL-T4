@@ -72,7 +72,7 @@
                             <tr class="tr-pendiente"> <!-- Fila destacada como Pendiente -->
                                 <!-- Fecha de inicio -->
                                 <td class="td-fecha">
-                                    {{ coevaluacion.fecha_inicio }}
+                                    {{ coevaluacion.fecha_inicio |date:"H:i d/m/Y" }}
                                 </td>
                                 <!-- Título de coevaluación -->
                                 <td>{{ coevaluacion.nombre }}l</td>
@@ -89,7 +89,8 @@
                                 <td>{{ coevaluacion.curso.ano }}-{{ coevaluacion.curso.semestre }}</td>
                                 <!-- Fecha de término -->
                                 <td class="td-fecha">
-                                    {{ coevaluacion.fecha_fin }}
+                                    {{ coevaluacion.fecha_fin|date:"H:i d/m/Y" }}
+
                                 </td>
                                 <!-- Estado -->
                                 <td>{{ coevaluacion.estado }}</td>
@@ -105,7 +106,7 @@
                         {% else %}
                             <tr>
                                 <td class="td-fecha">
-                                    {{ coevaluacion.fecha_inicio }}
+                                    {{ coevaluacion.fecha_inicio |date:"H:i d/m/Y" }}
                                 </td>
                                 <td> {{ coevaluacion.nombre }}</td>
                                 <td class="td-curso-full">
@@ -118,7 +119,7 @@
                                 </td>
                                 <td>{{ coevaluacion.curso.ano }}-{{ coevaluacion.curso.semestre }}</td>
                                 <td class="td-fecha">
-                                    {{ coevaluacion.fecha_fin }}
+                                    {{ coevaluacion.fecha_fin |date:"H:i d/m/Y"  }}
                                 </td>
                                 <td>{{ coevaluacion.estado }}</td>
                                 <td>

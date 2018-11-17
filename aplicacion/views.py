@@ -30,6 +30,7 @@ def landingPageAlumnos_view(request):
             alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
             cursos = Curso.objects.filter(id__in=alumnocurso)
             coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos).order_by('-fecha_inicio')
+            print(coevaluaciones[0].fecha_inicio)
             context = {'cursos': cursos, 'user': user, 'coevaluaciones': coevaluaciones}
             return render(request, 'home-vista-alumno.html', context)
     else:

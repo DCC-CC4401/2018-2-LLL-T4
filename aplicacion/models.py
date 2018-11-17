@@ -41,8 +41,8 @@ class Grupo(models.Model):
 class Coevaluacion(models.Model):
     nombre = models.CharField(max_length=255)
     estado = models.CharField(max_length=255)
-    fecha_inicio = models.DateField()
-    fecha_fin = models.DateField()
+    fecha_inicio = models.DateTimeField()
+    fecha_fin = models.DateTimeField()
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
 
     def __str__(self):
