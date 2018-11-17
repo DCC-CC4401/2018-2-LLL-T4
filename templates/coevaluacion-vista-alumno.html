@@ -16,7 +16,7 @@
     <body>
         <!-- Barra superior -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5 py-3">
-            <a class="navbar-brand" href="#">Sistema de Coevaluaciones DCC</a>
+            <a class="navbar-brand" href="/">Sistema de Coevaluaciones DCC</a>
             <!-- Al achicar la pantalla, el menú se oculta y se vuelve desplegable mediante este botón. -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon">
@@ -29,11 +29,11 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Juanito Pérez</a>
+                        <a class="nav-link" href="#">{{ user.first_name }} {{ user.last_name }}</a>
                     </li>
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Cerrar Sesión</a>
+                        <a class="nav-link" href="/logout">Cerrar Sesión</a>
                     </li>
                 </ul>
             </div>
@@ -52,21 +52,21 @@
                 <div class="col-md-4 mb-3">
                     <h4 class="d-inline-block mt-1">Información</h4>
                     <h6 class="text-muted mt-3 mb-0 pb-1 border-bottom">Título</h6>
-                    <span>Tarea 1</span>
+                    <span> {{ coevaluacion.nombre }}</span>
                     <h6 class="text-muted mt-3 mb-0 pb-1 border-bottom">Curso</h6>
-                    <span>CC4401 Ingeniería de Software I 2018, Primavera</span>
+                    <span>{{ coevaluacion.curso.datos.codigo }} {{ coevaluacion.curso.datos.nombre }} {{ coevaluacion.curso.ano }} - {{ coevaluacion.curso.semestre }}</span>
                     <div class="row">
                         <div class="col-6">
                             <h6 class="text-muted mt-3 mb-0 pb-1 border-bottom">Fecha de inicio</h6>
-                            <span>03:53 20/10/18</span>
+                            <span>{{ coevaluacion.fecha_inicio |date:"H:i d/m/Y" }}</span>
                         </div>
                         <div class="col-6">
                             <h6 class="text-muted mt-3 mb-0 pb-1 border-bottom">Fecha límite</h6>
-                            <span>23:59 27/10/18</span>
+                            <span>{{ coevaluacion.fecha_fin |date:"H:i d/m/Y" }}</span>
                         </div>
                     </div>
                     <h6 class="text-muted mt-3 mb-0 pb-1 border-bottom">Estado</h6>
-                    <span>Abierta</span>
+                    <span>{{ coevaluacion.estado }}</span>
                 </div>
                 <!-- FIN Información -->
 
@@ -83,10 +83,12 @@
                                 </tr>
                             </thead>
                             <tbody>
+                            {% for companero in companeros %}
                                 <tr>
-                                    <td>Estudiante 1</td>
+                                    <td>{{ companero.alumno.user.first_name }} {{ companero.alumno.user.last_name }}</td>
                                     <td class="td-icon"></td>
                                 </tr>
+                            {% endfor %}
                                 <tr class="tr-pendiente" onclick="jumpTo('responder-coeval')">
                                     <td>Estudiante 2 (clickeable)</td>
                                     <td class="td-icon"><a href="#responder-coeval" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/answer-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a></td>

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from aplicacion.models import Curso, AlumnoCurso, Alumno, Coevaluacion
+from aplicacion.models import Curso, AlumnoCurso, Alumno, Coevaluacion, Grupo, AlumnoGrupo
 
 
 def login_view(request):
@@ -45,3 +45,23 @@ def landingPageAlumnos_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login')
+
+
+def coevaluacionAlumnos_view(request):
+    if request.user.is_authenticated and request.method == 'GET':
+        user = request.user
+        coevaluacion_id = request.GET.get('coevaluacion')
+        coevaluacion = Coevaluacion.objects.get(id=coevaluacion_id)
+        curso = coevaluacion.curso
+        alumno = Alumno.objects.filter(user=user)
+        if not alumno:
+            return redirect('login')
+        else:
+            grupo = Grupo.objects.filter(curso=curso)
+            alumnoGrupo = AlumnoGrupo.objects.get(alumno=alumno[0], grupo__in=grupo, pertenece=True)
+            grupo = alumnoGrupo.grupo
+            companeros = AlumnoGrupo.objects.filter(grupo=grupo, pertenece=True).exclude(alumno=alumno[0])
+            context = {'user': user, 'coevaluacion': coevaluacion, 'companeros': companeros}
+            return render(request, 'coevaluacion-vista-alumno.html', context)
+    else:
+        return redirect('login')

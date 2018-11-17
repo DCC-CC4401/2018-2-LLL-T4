@@ -96,11 +96,11 @@
                                 <td>{{ coevaluacion.estado }}</td>
                                 <!-- Ícono de acción (responder) -->
                                 <td class="td-icon">
-                                    <a href="#" title="Responder coevaluación"><img
+                                    <a href="/coevaluacionAlumnos/?coevaluacion={{ coevaluacion.id}}" title="Responder coevaluación"><img
                                             class="clickable-icon answer-icon wiggle"
                                             src="{% static 'icon/answer-icon.png' %}"
                                             alt="Responder coevaluación" width="28"
-                                            height="28"></a>
+                                            height="28">{{ coevaluacion.id}}</a>
                                 </td>
                             </tr>
                         {% else %}

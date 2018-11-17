@@ -94,7 +94,11 @@ class DocenteCurso(models.Model):
 class AlumnoGrupo(models.Model):
     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
     grupo = models.ForeignKey(Grupo, on_delete=models.CASCADE)
+    pertenece = models.BooleanField()
     fecha_ingreso = models.DateField()
+
+    def __str__(self):
+        return self.alumno.user.first_name + " " + self.grupo.nombre + " "
 
 
 class AlumnoCoevaluacion(models.Model):
