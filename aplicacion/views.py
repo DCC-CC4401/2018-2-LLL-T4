@@ -26,3 +26,11 @@ def landingPageAlumnos_view(request):
     # context = {'cursos': cursos}
     # return render(request, 'home-vista-alumno.html', context)
     return render(request, 'home-vista-alumno.html')
+
+def perfilAlumnos_view(request):
+    # persona = PersonaNatural.objects.get(RUT="19.540.088-1")
+    # alumno = Alumno.objects.get(personaNatural=persona)
+    # cursos = AlumnoCurso.objects.filter(alumno=alumno)
+    # context = {'cursos': cursos}
+    # return render(request, 'home-vista-alumno.html', context)
+    return render(request, 'perfil-vista-dueno.html')
