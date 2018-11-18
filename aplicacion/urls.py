@@ -6,5 +6,6 @@ urlpatterns = [
     url(r'^logout/', views.logout_view, name='logout'),
     url(r'^$', views.landingPageAlumnos_view, name='landingpagealumnos'),
     url(r'^coevaluacionAlumnos/', views.coevaluacionAlumnos_view, name='coevaluacionAlumnos'),
-    url(r'^perfil/', views.perfil_view, name='perfil')
+    url(r'^perfil/', views.perfil_view, name='perfil'),
+    url(r'^curso-alumno/', views.curso_alumno, name='cursoAlumnos')
 ]
