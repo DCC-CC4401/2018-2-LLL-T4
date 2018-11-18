@@ -65,3 +65,20 @@ def coevaluacionAlumnos_view(request):
             return render(request, 'coevaluacion-vista-alumno.html', context)
     else:
         return redirect('login')
+
+def perfil_view(request):
+    #arreglar, solo puede verlo alumno
+    if request.user.is_authenticated:
+        user = request.user
+        alumno = Alumno.objects.filter(user=user)
+        if not alumno:
+            return redirect('login')
+        else:
+            alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
+            cursos = Curso.objects.filter(id__in=alumnocurso)
+            coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos).order_by('-fecha_inicio')
+            #falta preguntar por las notas
+            context = {'cursos': cursos, 'user': user, 'coevaluaciones': coevaluaciones}
+            return render(request, 'perfil-vista-dueno.html', context)
+    else:
+        return redirect('login')
