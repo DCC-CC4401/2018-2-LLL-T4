@@ -77,17 +77,19 @@
                             </thead>
                             <!-- Cuerpo de tabla (Table Data) -->
                             <tbody>
-                                <tr id="row-btn" onclick="showNotas()">
-                                    <td class="td-curso-full">
-                                        <div class="cargos cargos-alumno tooltip-custom">
-                                            <span class="tooltiptext"></span>
-                                        </div>
-                                        <span class="curso-nombre">Proyecto de Software (clickeable)</span>
-                                        <br>
-                                        <span class="curso-codigo">CC5402-1</span>
-                                    </td>
-                                    <td>2018-2</td>
-                                </tr>
+                                {% for curso in cursos %}
+                                    <tr id="row-btn" onclick="showNotas()">
+                                        <td class="td-curso-full">
+                                                <div class="cargos cargos-alumno tooltip-custom">
+                                                    <span class="tooltiptext"></span>
+                                                </div>
+                                                <span class="curso-nombre">{{curso.datos.nombre}}</span>
+                                                <br>
+                                                <span class="curso-codigo">{{curso.datos.codigo}}-{{curso.seccion}}</span>
+                                            </td>
+                                            <td>{{curso.ano}}-{{curso.semestre}}</td>
+                                        </tr>
+                                {% endfor %}
                                 <tr>
                                     <td class="td-curso-full">
                                         <div class="cargos cargos-alumno tooltip-custom">
@@ -157,29 +159,16 @@
 
                                 <!-- Cuerpo de tabla (Table Data) -->
                                 <tbody>
-                                    <tr>
-                                        <!-- Fecha de publicación -->
-                                        <td class="td-fecha">23:59 22/11/17</td>
-                                        <!-- Título de coevaluación -->
-                                        <td>Tarea 4</td>
-                                        <!-- Nota -->
-                                        <td class="td-nota">6.2</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="td-fecha">23:59 13/10/17</td>
-                                        <td>Tarea 3</td>
-                                        <td class="td-nota td-nota-roja">3.8</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="td-fecha">23:59 17/09/17</td>
-                                        <td>Tarea 2</td>
-                                        <td class="td-nota">5.7</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="td-fecha">12:15 20/08/17</td>
-                                        <td>Tarea 1</td>
-                                        <td class="td-nota">6.5</td>
-                                    </tr>
+                                    {% for coev in coevaluaciones %}
+                                        <tr>
+                                            <!-- Fecha de publicación -->
+                                            <td class="td-fecha">{{ coev.fecha_inicio |date:"H:i d/m/y" }}</td>
+                                            <!-- Título de coevaluación -->
+                                            <td>{{ coev.nombre }}</td>
+                                            <!-- Nota -->
+                                            <td class="td-nota">nota</td>
+                                        </tr>
+                                    {% endfor %}
                                 </tbody>
                             </table>
                         </div>
