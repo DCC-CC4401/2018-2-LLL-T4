@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from aplicacion.models import Curso, AlumnoCurso, Alumno, Coevaluacion, Grupo, AlumnoGrupo
+from aplicacion.models import Curso, AlumnoCurso, Alumno, Coevaluacion, Grupo, AlumnoGrupo, CursoDatos
 
 
 def login_view(request):
@@ -80,5 +80,16 @@ def perfil_view(request):
             #falta preguntar por las notas
             context = {'cursos': cursos, 'user': user, 'coevaluaciones': coevaluaciones}
             return render(request, 'perfil-vista-dueno.html', context)
+    else:
+        return redirect('login')
+
+def curso_alumno(request, curso_id):
+    if request.user.is_authenticated:
+        user = request.user
+        curso = Curso.objects.filter(id__in=curso_id)[0]
+        lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('-fecha_inicio')
+        #si no es alumno, a donde se deberia redirigir?
+        context = {'user': user, 'lista_coevs': lista_coevs, 'curso': curso}
+        return render(request, 'curso-vista-alumno.html', context)
     else:
         return redirect('login')
