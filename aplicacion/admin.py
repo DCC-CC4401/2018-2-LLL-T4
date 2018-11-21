@@ -13,5 +13,6 @@ admin.site.register(AlumnoCurso)
 admin.site.register(AlumnoGrupo)
 admin.site.register(AlumnoCoevaluacion)
 admin.site.register(Respuesta)
-admin.site.register(AlumnoRespuesta)
+admin.site.register(AutorAlumnoRespuesta)
+admin.site.register(AutorAlumnoCoevaluacion)
 

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 
 
-# Aquí estan los modelos de datos. Falta asociar el usuario a la persona natural. Esto se puede hacer con lo siguiente:
+# Aqui estan los modelos de datos. Falta asociar el usuario a la persona natural. Esto se puede hacer con lo siguiente:
 # https://stackoverflow.com/questions/34875146/foreignkey-to-a-model-field .
 
 class CursoDatos(models.Model):
@@ -39,8 +39,13 @@ class Grupo(models.Model):
 
 
 class Coevaluacion(models.Model):
+    ESTADO_CHOICES = (
+        ('Abierta', 'Abierta'),
+        ('Cerrada', 'Cerrada'),
+        ('Publicada', 'Publicada'),
+    )
     nombre = models.CharField(max_length=255)
-    estado = models.CharField(max_length=255)
+    estado = models.CharField(max_length=255, choices=ESTADO_CHOICES)
     fecha_inicio = models.DateTimeField()
     fecha_fin = models.DateTimeField()
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE)
@@ -53,9 +58,15 @@ class Coevaluacion(models.Model):
 
 
 class Pregunta(models.Model):
+
+    TIPO_CHOICES = (
+        ('Multiple', 'Multiple'),
+        ('Desarrollo', 'Desarrollo'),
+    )
     descripcion = models.TextField()
-    tipo = models.CharField(max_length=255)
+    tipo = models.CharField(max_length=255, choices=TIPO_CHOICES)
     coevaluacion = models.ForeignKey(Coevaluacion, on_delete=models.CASCADE)
+    ponderacion = models.DecimalField(max_digits=4, decimal_places=2)
 
     class Meta:
         unique_together = (('descripcion', 'coevaluacion'),)
@@ -101,15 +112,40 @@ class AlumnoGrupo(models.Model):
         return self.alumno.user.first_name + " " + self.grupo.nombre + " "
 
 
+
 class AlumnoCoevaluacion(models.Model):
+    ESTADO_CHOICES = (
+        ('Contestada', 'Contestada'),
+        ('Pendiente', 'Pendiente'),
+        ('Cerrada', 'Cerrada'),
+        ('Publicada', 'Publicada'),
+    )
     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
     coevaluacion = models.ForeignKey(Coevaluacion, on_delete=models.CASCADE)
-    nota = models.IntegerField()
+    estado = models.CharField(max_length=255, choices=ESTADO_CHOICES)
 
     class Meta:
         unique_together = (('alumno', 'coevaluacion'),)
 
 
-class AlumnoRespuesta(models.Model):
+
+#AutorAlumnoCoevaluacion: Une quien corrige al alumno en la respectiva coevaluacion.
+#Si contesto la coevaluacion se encuentra la tabla, si es que no, no.
+
+class AutorAlumnoCoevaluacion(models.Model):
+    autor = models.ForeignKey(Alumno, related_name='autor', on_delete=models.CASCADE)
+    alumno = models.ForeignKey(Alumno, related_name='alumno',on_delete=models.CASCADE)
+    coevaluacion = models.ForeignKey(Coevaluacion, on_delete=models.CASCADE)
+
+    class Meta:
+       unique_together = (('autor','alumno', 'coevaluacion'),)
+
+
+class AutorAlumnoRespuesta(models.Model):
     respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
-    alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    alumno = models.ForeignKey(Alumno, related_name='alumno_respuesta',on_delete=models.CASCADE)
+    autor = models.ForeignKey(Alumno, related_name='autor_respuesta', on_delete=models.CASCADE)
+#agregar pregunta y coevaluacion
+
+
+#Colocar AlumnoCoevaluacion para dar estado a las coevaluaciones
