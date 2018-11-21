@@ -33,7 +33,7 @@
                     </form>
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Juanito Pérez</a>
+                        <a class="nav-link" href="#">{{ user.first_name }} {{ user.last_name }}</a>
                     </li>
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
@@ -50,7 +50,7 @@
             <h3 class="d-inline-block page-title">Ficha de Curso</h3>
             <h5 class="mb-3">
                 <div class="cargos cargos-profesor"></div>
-                CC4401-1 Ingeniería de Software 2018, Primavera
+                {{ curso.datos.codigo }}-{{ curso.seccion }} {{ curso.datos.nombre }} {{ curso.ano }}, {{ curso.semestre }} {# Ojo, quizas seria mejor hacer una conversion entre el nro y el nombre del semestre #}
             </h5>
             <hr/>
             <!-- Tablas de resumen -->
