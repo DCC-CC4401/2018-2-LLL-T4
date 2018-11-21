@@ -177,6 +177,10 @@ def perfil_view(request):
                 user.save()
                 update_session_auth_hash(request, user)
                 context.update({'correcto': 'correcto'})
+            else:
+                context.update({'error': 'error'})
+        else:
+            context.update({'error': 'error'})
 
     if request.user.is_authenticated:
         user = request.user
