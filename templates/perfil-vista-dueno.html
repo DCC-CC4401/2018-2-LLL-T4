@@ -11,12 +11,12 @@
         <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
         <script src="{% static 'js/bootstrap.min.js'%}"></script>
         <script src="{% static 'js/coeval.js'%}"></script>
-        <title>Juanito Pérez - Sistema de Coevaluaciones DCC</title>
+        <title>{{ user.first_name }} {{ user.last_name }} - Sistema de Coevaluaciones DCC</title>
     </head>
     <body>
         <!-- Barra superior -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5 py-3">
-            <a class="navbar-brand" href="#">Sistema de Coevaluaciones DCC</a>
+            <a class="navbar-brand" href="/">Sistema de Coevaluaciones DCC</a>
             <!-- Al achicar la pantalla, el menú se oculta y se vuelve desplegable mediante este botón. -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon">
@@ -29,11 +29,11 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">{{ user.first_name }} {{ user.last_name }}</a>
+                        <a class="nav-link" href="/perfil">{{ user.first_name }} {{ user.last_name }}</a>
                     </li>
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Cerrar Sesión</a>
+                        <a class="nav-link" href="/logout">Cerrar Sesión</a>
                     </li>
                 </ul>
             </div>
@@ -58,7 +58,7 @@
                     <h6 class="text-muted mt-3 mb-0 pb-1 border-bottom">Correo Electrónico</h6>
                     <span>{{ user.email }}</span>
                     <button type="button" id="change-pass-btn" class="btn btn-secondary mt-3 d-block" onclick="changePass()">Cambiar contraseña</button>
-                    <span class="small">(clickeable)</span>
+
                 </div>
                 <!-- FIN Perfil -->
 
@@ -78,40 +78,18 @@
                             <!-- Cuerpo de tabla (Table Data) -->
                             <tbody>
                                 {% for curso in cursos %}
-                                    <tr id="row-btn" onclick="showNotas()">
+                                        <tr id="row-btn{{ curso.id }}" onclick="showNotas({{ curso.id }}, {{ n_cursos}}, {{ n_coev }})" >
                                         <td class="td-curso-full">
                                                 <div class="cargos cargos-alumno tooltip-custom">
                                                     <span class="tooltiptext"></span>
                                                 </div>
                                                 <span class="curso-nombre">{{curso.datos.nombre}}</span>
                                                 <br>
-                                                <span class="curso-codigo">{{curso.datos.codigo}}-{{curso.seccion}}</span>
+                                                <span class="curso-codigo" id = "cursocodigo{{ curso.id }}">{{curso.datos.codigo}}-{{curso.seccion}}</span>
                                             </td>
-                                            <td>{{curso.ano}}-{{curso.semestre}}</td>
+                                            <td id = "cursoano{{ curso.id }}">{{curso.ano}}-{{curso.semestre}}</td>
                                         </tr>
                                 {% endfor %}
-                                <tr>
-                                    <td class="td-curso-full">
-                                        <div class="cargos cargos-alumno tooltip-custom">
-                                            <span class="tooltiptext"></span>
-                                        </div>
-                                        <span class="curso-nombre">Ingeniería de Software II</span>
-                                        <br>
-                                        <span class="curso-codigo">CC5401-1</span>
-                                    </td>
-                                    <td>2018-1</td>
-                                </tr>
-                                <tr>
-                                    <td class="td-curso-full">
-                                        <div class="cargos cargos-alumno tooltip-custom">
-                                            <span class="tooltiptext"></span>
-                                        </div>
-                                        <span class="curso-nombre">Ingeniería de Software I</span>
-                                        <br>
-                                        <span class="curso-codigo">CC4401-1</span>
-                                    </td>
-                                    <td>2017-2</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -122,10 +100,11 @@
                 <div class="col-md-5">
                     <div id="cambiar-contrasena">
                         <h4 class="d-inline-block mt-1">Cambiar contraseña</h4>
-                        <form>
+                        <form method="POST">
+                            {% csrf_token %}
                             <div class="form-group">
                                 <label for="passOld">Ingrese su contraseña actual</label>
-                                <input type="password" class="form-control" id="passOld">
+                                <input type="password" class="form-control" id="passOld" name="passOld">
                             </div>
                             <div class="form-group">
                                 <label for="passNew">Ingrese su nueva contraseña</label>
@@ -144,7 +123,8 @@
                     </div>
                     <div id="notas-resumen">
                         <h4 class="d-inline-block mt-1">Tus Notas</h4>
-                        <h5 class="float-right mb-0 mt-2 text-muted" id="currentCurso">CC5402-1, 2018-2</h5>
+
+                        <h5 class="float-right mb-0 mt-2 text-muted" id="currentCurso">curso</h5>
 
                         <div class="table-wrap table-responsive my-1"> <!-- "Envoltura" de la tabla -->
                             <table class="table table-notas-perfil table-striped table-hover mb-0"> <!-- Tabla -->
@@ -160,13 +140,17 @@
                                 <!-- Cuerpo de tabla (Table Data) -->
                                 <tbody>
                                     {% for coev in coevaluaciones %}
-                                        <tr>
+                                        <tr id="{{ coev.curso.id }}-{{ coev.id }}">
                                             <!-- Fecha de publicación -->
-                                            <td class="td-fecha">{{ coev.fecha_inicio |date:"H:i d/m/y" }}</td>
+                                            <td class="td-fecha" >{{ coev.fecha_inicio |date:"H:i d/m/y" }}</td>
                                             <!-- Título de coevaluación -->
                                             <td>{{ coev.nombre }}</td>
                                             <!-- Nota -->
-                                            <td class="td-nota">nota</td>
+                                            {% for nota in notas %}
+                                                {% if nota.coevaluacion == coev %}
+                                                    <td class="td-nota"> {{ nota.nota }}</td>
+                                                {% endif %}
+                                            {% endfor %}
                                         </tr>
                                     {% endfor %}
                                 </tbody>
