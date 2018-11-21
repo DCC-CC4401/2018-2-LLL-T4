@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
+from django.contrib.auth import update_session_auth_hash
 
 from aplicacion.models import *
 
@@ -161,7 +162,21 @@ def curso_docente(request):
 
 def perfil_view(request):
     #arreglar, solo puede verlo alumno
-    if request.user.is_authenticated:
+    if request.method == 'POST':
+        user = request.user
+        username = user.username
+        passOld = request.POST.get('passOld')
+        valid = authenticate(request, username=username, password=passOld)
+        if valid is not None:
+            passNew = request.POST.get('passNew')
+            passNewConfirm = request.POST.get('passNewConfirm')
+            if passNew == passNewConfirm:
+                user.set_password(passNew)
+                user.save()
+                update_session_auth_hash(request, user)
+        return redirect('perfil')
+
+    elif request.user.is_authenticated:
         user = request.user
         alumno = Alumno.objects.filter(user=user)
         if not alumno:
