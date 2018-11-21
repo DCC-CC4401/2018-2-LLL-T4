@@ -162,6 +162,8 @@ def curso_docente(request):
 
 def perfil_view(request):
     #arreglar, solo puede verlo alumno
+    context = {}
+
     if request.method == 'POST':
         user = request.user
         username = user.username
@@ -174,9 +176,9 @@ def perfil_view(request):
                 user.set_password(passNew)
                 user.save()
                 update_session_auth_hash(request, user)
-        return redirect('perfil')
+                context.update({'correcto': 'correcto'})
 
-    elif request.user.is_authenticated:
+    if request.user.is_authenticated:
         user = request.user
         alumno = Alumno.objects.filter(user=user)
         if not alumno:
@@ -190,8 +192,8 @@ def perfil_view(request):
             print(alumnoCoevaluaciones)
             n_cursos = cursos.__len__()
             n_coev = alumnoCoevaluaciones.__len__()
-            context = {'cursos': cursos, 'user': user, 'alumnoCoevaluaciones': alumnoCoevaluaciones, 'n_cursos': n_cursos,
-                        'n_coev': n_coev}
+            context.update ({'cursos': cursos, 'user': user, 'alumnoCoevaluaciones': alumnoCoevaluaciones, 'n_cursos': n_cursos,
+                        'n_coev': n_coev})
             return render(request, 'perfil-vista-dueno.html', context)
     else:
         return redirect('login')
