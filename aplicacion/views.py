@@ -124,23 +124,6 @@ def coevaluacionAlumnos_view(request):
     else:
         return redirect('login')
 
-def perfil_view(request):
-    #arreglar, solo puede verlo alumno
-    if request.user.is_authenticated:
-        user = request.user
-        alumno = Alumno.objects.filter(user=user)
-        if not alumno:
-            return redirect('login')
-        else:
-            alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
-            cursos = Curso.objects.filter(id__in=alumnocurso)
-            coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos).order_by('-fecha_inicio')
-            #falta preguntar por las notas
-            context = {'cursos': cursos, 'user': user, 'coevaluaciones': coevaluaciones}
-            return render(request, 'perfil-vista-dueno.html', context)
-    else:
-        return redirect('login')
-
 def curso_alumno(request):
     if request.user.is_authenticated and request.method == 'GET':
         user = request.user
@@ -173,5 +156,26 @@ def curso_docente(request):
                 dict[coev] = list(AlumnoCoevaluacion.objects.filter(coevaluacion=coev).values())
             lista_alum = list(AlumnoCurso.objects.filter(curso=curso).values())
             #estudiantes =
+    else:
+        return redirect('login')
+
+def perfil_view(request):
+    #arreglar, solo puede verlo alumno
+    if request.user.is_authenticated:
+        user = request.user
+        alumno = Alumno.objects.filter(user=user)
+        if not alumno:
+            return redirect('login')
+        else:
+
+            alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
+            cursos = Curso.objects.filter(id__in=alumnocurso)
+            alumnonotas = AlumnoCoevaluacion.objects.filter(alumno=alumno[0])
+            n_cursos = cursos.__len__()
+            coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos).order_by('-fecha_inicio')
+            n_coev = coevaluaciones.__len__()
+            context = {'cursos': cursos, 'user': user, 'coevaluaciones': coevaluaciones, 'n_cursos': n_cursos,
+                       'notas': alumnonotas, 'n_coev': n_coev}
+            return render(request, 'perfil-vista-dueno.html', context)
     else:
         return redirect('login')
