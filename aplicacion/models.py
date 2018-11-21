@@ -123,6 +123,7 @@ class AlumnoCoevaluacion(models.Model):
     alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
     coevaluacion = models.ForeignKey(Coevaluacion, on_delete=models.CASCADE)
     estado = models.CharField(max_length=255, choices=ESTADO_CHOICES)
+    nota = models.DecimalField(max_digits=2, decimal_places=1, default=1.0)
 
     class Meta:
         unique_together = (('alumno', 'coevaluacion'),)
@@ -145,7 +146,7 @@ class AutorAlumnoRespuesta(models.Model):
     respuesta = models.ForeignKey(Respuesta, on_delete=models.CASCADE)
     alumno = models.ForeignKey(Alumno, related_name='alumno_respuesta',on_delete=models.CASCADE)
     autor = models.ForeignKey(Alumno, related_name='autor_respuesta', on_delete=models.CASCADE)
-#agregar pregunta y coevaluacion
+# agregar pregunta y coevaluacion
 
 
 #Colocar AlumnoCoevaluacion para dar estado a las coevaluaciones
