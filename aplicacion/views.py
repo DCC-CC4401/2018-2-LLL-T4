@@ -150,8 +150,10 @@ def curso_alumno(request):
             return redirect('login')
         else:
             curso = Curso.objects.get(id=curso_id)
-            lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('-fecha_inicio')
-            context = {'user': user, 'lista_coevs': lista_coevs, 'curso': curso}
+            coevaluaciones = Coevaluacion.objects.filter(curso=curso)
+            alumnoCoevaluaciones = AlumnoCoevaluacion.objects.filter(alumno=alumno[0], coevaluacion__in=coevaluaciones).order_by('-coevaluacion__fecha_inicio')
+            print(alumnoCoevaluaciones)
+            context = {'user': user, 'alumnoCoevaluaciones': alumnoCoevaluaciones, 'curso': curso}
             return render(request, 'curso-vista-alumno.html', context)
     else:
         return redirect('login')

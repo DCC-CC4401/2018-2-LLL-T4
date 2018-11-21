@@ -16,7 +16,7 @@
     <body>
         <!-- Barra superior -->
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5 py-3">
-            <a class="navbar-brand" href="#">Sistema de Coevaluaciones DCC</a>
+            <a class="navbar-brand" href="/">Sistema de Coevaluaciones DCC</a>
             <!-- Al achicar la pantalla, el menú se oculta y se vuelve desplegable mediante este botón. -->
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon">
@@ -29,7 +29,7 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">{{ user.first_name }} {{ user.last_name }}</a>
+                        <a class="nav-link" href="/perfil">{{ user.first_name }} {{ user.last_name }}</a>
                     </li>
                     <li class="divider-vertical"></li>
                     <li class="nav-item">
@@ -70,38 +70,38 @@
 
                             <!-- Cuerpo de tabla (Table Data) -->
                             <tbody>
-                                {% for coev in lista_coevs %}
-                                    {% if coev.estado == "Pendiente" %}
-                                    <tr class="tr-pendiente">
+                                {% for alumnoCoevaluacion in alumnoCoevaluaciones %}
+                                    {% if alumnoCoevaluacion.estado == "Pendiente" %}
+                                        <tr class="tr-pendiente clickable-row" data-href="/coevaluacionAlumnos/?coevaluacion={{ alumnoCoevaluacion.coevaluacion.id}}"> <!-- Fila destacada como Pendiente -->
                                         <td class="td-fecha">
-                                            {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
+                                            {{ alumnoCoevaluacion.coevaluacion.fecha_inicio |date:"H:i d/m/Y" }}
                                         </td>
                                         <td>
-                                            {{ coev.nombre }}
+                                            {{ alumnoCoevaluacion.coevaluacion.nombre }}
                                         </td>
                                         <td class="td-fecha">
-                                            {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
+                                            {{ alumnoCoevaluacion.coevaluacion.fecha_inicio |date:"H:i d/m/Y" }}
                                         </td>
                                         <td>
-                                            {{ coev.estado }}
+                                            {{ alumnoCoevaluacion.estado }}
                                         </td>
                                         <td class="td-icon">
                                             <a href="#" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/answer-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a>
                                         </td>
                                     </tr>
                                     {% else %}
-                                        <tr>
+                                        <tr class="clickable-row" data-href="/coevaluacionAlumnos/?coevaluacion={{ alumnoCoevaluacion.coevaluacion.id}}">
                                         <td class="td-fecha">
-                                            {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
+                                            {{ alumnoCoevaluacion.coevaluacion.fecha_inicio |date:"H:i d/m/Y" }}
                                         </td>
                                         <td>
-                                            {{ coev.nombre }}
+                                            {{ alumnoCoevaluacion.coevaluacion.nombre }}
                                         </td>
                                         <td class="td-fecha">
-                                            {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
+                                            {{ alumnoCoevaluacion.coevaluacion.fecha_inicio |date:"H:i d/m/Y" }}
                                         </td>
                                         <td>
-                                            {{ coev.estado }}
+                                            {{ alumnoCoevaluacion.estado }}
                                         </td>
                                     </tr>
                                     {% endif %}
@@ -115,5 +115,14 @@
         </div>
             
     </body>
+
+<script>
+jQuery(document).ready(function($) {
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+});
+</script>
+
     </html>
         
