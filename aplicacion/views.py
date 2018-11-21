@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 
-from aplicacion.models import Curso, AlumnoCurso, Alumno, Coevaluacion, Grupo, AlumnoGrupo, CursoDatos
+from aplicacion.models import Curso, AlumnoCurso, Alumno, Coevaluacion, Grupo, AlumnoGrupo, CursoDatos, Docente, AlumnoCoevaluacion
 
 
 def login_view(request):
@@ -83,13 +83,35 @@ def perfil_view(request):
     else:
         return redirect('login')
 
-def curso_alumno(request, curso_id):
-    if request.user.is_authenticated:
+def curso_alumno(request):
+    if request.user.is_authenticated and request.method == 'GET':
         user = request.user
-        curso = Curso.objects.filter(id__in=curso_id)[0]
-        lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('-fecha_inicio')
-        #si no es alumno, a donde se deberia redirigir?
-        context = {'user': user, 'lista_coevs': lista_coevs, 'curso': curso}
-        return render(request, 'curso-vista-alumno.html', context)
+        curso_id = request.GET.get('curso')
+        alumno = Alumno.objects.filter(user=user)
+        if not alumno:
+            return redirect('login')
+        else:
+            curso = Curso.objects.get(id=curso_id)
+            lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('-fecha_inicio')
+            context = {'user': user, 'lista_coevs': lista_coevs, 'curso': curso}
+            return render(request, 'curso-vista-alumno.html', context)
+    else:
+        return redirect('login')
+
+def curso_docente(request):
+    if request.user.is_authenticated and request.method == 'GET':
+        user = request.user
+        curso_id = request.GET.get('curso')
+        docente = Docente.objects.filter(user=user)
+        if not docente:
+            return redirect('login')
+        else:
+            curso = Curso.objects.filter(id__in=curso_id)[0]
+            lista_coevs = list(Coevaluacion.objects.filter(curso=curso).order_by('-fecha_inicio').values())
+            dict = {}
+            for coev in lista_coevs:
+                dict[coev] = list(AlumnoCoevaluacion.objects.filter(coevaluacion=coev).values())
+            lista_alum = list(AlumnoCurso.objects.filter(curso=curso).values())
+            #estudiantes =
     else:
         return redirect('login')
