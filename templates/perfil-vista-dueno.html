@@ -139,18 +139,14 @@
 
                                 <!-- Cuerpo de tabla (Table Data) -->
                                 <tbody>
-                                    {% for coev in coevaluaciones %}
-                                        <tr id="{{ coev.curso.id }}-{{ coev.id }}">
+                                    {% for alumnoCoev in alumnoCoevaluaciones %}
+                                        <tr id="{{ alumnoCoev.coevaluacion.curso.id }}-{{ alumnoCoev.coevaluacion.id }}">
                                             <!-- Fecha de publicación -->
-                                            <td class="td-fecha" >{{ coev.fecha_inicio |date:"H:i d/m/y" }}</td>
+                                            <td class="td-fecha" >{{ alumnoCoev.coevaluacion.fecha_inicio |date:"H:i d/m/y" }}</td>
                                             <!-- Título de coevaluación -->
-                                            <td>{{ coev.nombre }}</td>
+                                            <td>{{ alumnoCoev.coevaluacion.nombre }}</td>
                                             <!-- Nota -->
-                                            {% for nota in notas %}
-                                                {% if nota.coevaluacion == coev %}
-                                                    <td class="td-nota"> {{ nota.nota }}</td>
-                                                {% endif %}
-                                            {% endfor %}
+                                            <td class="td-nota"> {{ alumnoCoev.nota }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

@@ -170,12 +170,13 @@ def perfil_view(request):
 
             alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
             cursos = Curso.objects.filter(id__in=alumnocurso)
-            alumnonotas = AlumnoCoevaluacion.objects.filter(alumno=alumno[0])
+            coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos)
+            alumnoCoevaluaciones = AlumnoCoevaluacion.objects.filter(alumno=alumno[0], coevaluacion__in = coevaluaciones, estado='Publicada').order_by('-coevaluacion__fecha_inicio')
+            print(alumnoCoevaluaciones)
             n_cursos = cursos.__len__()
-            coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos).order_by('-fecha_inicio')
-            n_coev = coevaluaciones.__len__()
-            context = {'cursos': cursos, 'user': user, 'coevaluaciones': coevaluaciones, 'n_cursos': n_cursos,
-                       'notas': alumnonotas, 'n_coev': n_coev}
+            n_coev = alumnoCoevaluaciones.__len__()
+            context = {'cursos': cursos, 'user': user, 'alumnoCoevaluaciones': alumnoCoevaluaciones, 'n_cursos': n_cursos,
+                        'n_coev': n_coev}
             return render(request, 'perfil-vista-dueno.html', context)
     else:
         return redirect('login')
