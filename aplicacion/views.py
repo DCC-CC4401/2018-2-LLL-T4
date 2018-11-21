@@ -1,9 +1,11 @@
+from django.utils import timezone
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
 
-from aplicacion.models import Curso, AlumnoCurso, Alumno, Coevaluacion, Grupo, AlumnoGrupo, CursoDatos, Docente, AlumnoCoevaluacion
+from aplicacion.models import *
 
 
 def login_view(request):
@@ -29,17 +31,18 @@ def landingPageAlumnos_view(request):
         else:
             alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
             cursos = Curso.objects.filter(id__in=alumnocurso)
-            coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos).order_by('-fecha_inicio')
-            print(coevaluaciones[0].fecha_inicio)
-            context = {'cursos': cursos, 'user': user, 'coevaluaciones': coevaluaciones}
+            alumnoCoevaluaciones = AlumnoCoevaluacion.objects.filter(alumno=alumno[0]).order_by('-coevaluacion__fecha_inicio')[:10]
+
+            context = {'cursos': cursos, 'user': user, 'alumnoCoevaluaciones': alumnoCoevaluaciones}
+            for alumnoCoevaluacion in alumnoCoevaluaciones:
+                if alumnoCoevaluacion.coevaluacion.fecha_fin <= timezone.now() and (alumnoCoevaluacion.estado == 'Pendiente' or alumnoCoevaluacion.estado == 'Contestada'):
+                    alumnoCoevaluacion.coevaluacion.estado = 'Cerrada'
+                    alumnoCoevaluacion.coevaluacion.save()
+                    alumnoCoevaluacion.estado = 'Cerrada'
+                    alumnoCoevaluacion.save()
             return render(request, 'home-vista-alumno.html', context)
     else:
         return redirect('login')
-    # persona = PersonaNatural.objects.get(RUT="19.540.088-1")
-    # alumno = Alumno.objects.get(personaNatural=persona)
-    # cursos = AlumnoCurso.objects.filter(alumno=alumno)
-    # context = {'cursos': cursos}
-    # return render(request, 'home-vista-alumno.html', context)
 
 
 def logout_view(request):
@@ -48,20 +51,75 @@ def logout_view(request):
 
 
 def coevaluacionAlumnos_view(request):
-    if request.user.is_authenticated and request.method == 'GET':
-        user = request.user
+    #falta revisar caso coevaluacion cerrada
+
+    #Para poder dejar las notas en un solo lugar hacemos un modelo que se llame "alumno-pregunta-nota"
+
+    if request.user.is_authenticated and request.method == 'POST':
+        #Anadir respuestas a la base de dates
+        #anadimos todas las respuestas, luego verificamos si alguna es none. Si es none, no se guardan los cambios.
         coevaluacion_id = request.GET.get('coevaluacion')
         coevaluacion = Coevaluacion.objects.get(id=coevaluacion_id)
+        preguntas = Pregunta.objects.filter(coevaluacion=coevaluacion)
+        evaluado_id = request.GET.get('companero')
+        evaluado = Alumno.objects.get(user_id=evaluado_id)
+        user = request.user
+        autor = Alumno.objects.get(user=user)
+
+        for pregunta in preguntas:
+            valor = request.POST.get(str(pregunta.id))
+            respuesta = Respuesta(pregunta=pregunta, valor=valor)
+            respuesta.save()
+            alumnoRespuesta = AutorAlumnoRespuesta(autor=autor, alumno=evaluado, respuesta=respuesta)
+            alumnoRespuesta.save()
+
+        #Anadir evaluado a la base de datos
+        evaluacion = AutorAlumnoCoevaluacion(autor = autor, alumno = evaluado, coevaluacion=coevaluacion)
+        evaluacion.save()
+
+        return HttpResponseRedirect("")
+    elif request.user.is_authenticated and request.method == 'GET':
+        user = request.user
+        coevaluacion_id = request.GET.get('coevaluacion')
+        evaluado_id = request.GET.get('companero')
+
+
+        coevaluacion = Coevaluacion.objects.get(id=coevaluacion_id)
+        evaluado = Alumno.objects.filter(user_id=evaluado_id)
         curso = coevaluacion.curso
         alumno = Alumno.objects.filter(user=user)
         if not alumno:
             return redirect('login')
         else:
-            grupo = Grupo.objects.filter(curso=curso)
-            alumnoGrupo = AlumnoGrupo.objects.get(alumno=alumno[0], grupo__in=grupo, pertenece=True)
-            grupo = alumnoGrupo.grupo
+            alumnoCoevaluacion = AlumnoCoevaluacion.objects.get(alumno=alumno[0], coevaluacion=coevaluacion)
+
+            grupos = Grupo.objects.filter(curso=curso)
+            alumnosCoevaluados = AutorAlumnoCoevaluacion.objects.filter(autor=alumno[0], coevaluacion=coevaluacion).values('alumno_id')
+            grupo = AlumnoGrupo.objects.get(alumno=alumno[0], grupo__in=grupos, pertenece=True).grupo
+
             companeros = AlumnoGrupo.objects.filter(grupo=grupo, pertenece=True).exclude(alumno=alumno[0])
-            context = {'user': user, 'coevaluacion': coevaluacion, 'companeros': companeros}
+            companerosNoContestado = companeros.exclude(alumno_id__in = alumnosCoevaluados)
+            companerosContestados = companeros.difference(companerosNoContestado)
+            preguntas = Pregunta.objects.filter(coevaluacion = coevaluacion)
+
+            if not companerosNoContestado and alumnoCoevaluacion.estado == 'Pendiente':
+                alumnoCoevaluacion.estado = 'Contestada'
+                alumnoCoevaluacion.save()
+            if not evaluado:
+                context = {'user': user, 'alumnoCoevaluacion': alumnoCoevaluacion,
+                           'companerosContestados': companerosContestados,
+                           'companerosNoContestado': companerosNoContestado}
+            else:
+                evaluadoIn = companerosNoContestado.filter(alumno=evaluado[0])
+                if not evaluadoIn:
+                    evaluadoIn = True
+                else:
+                    evaluadoIn = False
+                context = {'user': user, 'alumnoCoevaluacion': alumnoCoevaluacion,
+                           'companerosContestados': companerosContestados,
+                           'companerosNoContestado': companerosNoContestado,
+                           'evaluado' : evaluado[0], 'evaluadoIn' : evaluadoIn,
+                           'preguntas' : preguntas}
             return render(request, 'coevaluacion-vista-alumno.html', context)
     else:
         return redirect('login')
