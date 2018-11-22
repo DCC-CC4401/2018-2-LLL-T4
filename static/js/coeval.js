@@ -29,30 +29,17 @@ function cancelAdd() {
 
 function checkPass()
 {
-    //Store the password field objects into variables ...
     var pass1 = document.getElementById('passNew');
     var pass2 = document.getElementById('passNewConfirm');
-    //Store the Confimation Message Object ...
-    //var message = document.getElementById('confirmMessage');
-    //Set the colors we will be using ...
     var goodColor = "#66cc66";
     var badColor = "#ff6666";
-    //Compare the values in the password field
-    //and the confirmation field
+    var white = "#ffffff";
     if(pass1.value === pass2.value){
-        //The passwords match.
-        //Set the color to the good color and inform
-        //the user that they have entered the correct password
         pass2.style.backgroundColor = goodColor;
-        //message.style.color = goodColor;
-        //message.innerHTML = "Passwords Match!"
+    }else if(pass2.value === ""){
+        pass2.style.backgroundColor = white;
     }else{
-        //The passwords do not match.
-        //Set the color to the bad color and
-        //notify the user.
         pass2.style.backgroundColor = badColor;
-        //message.style.color = badColor;
-        //message.innerHTML = "Passwords Do Not Match!"
     }
 }
 
@@ -60,8 +47,11 @@ function changePass() {
     document.getElementById("cambiar-contrasena").style.display = "block";
     document.getElementById("notas-resumen").style.display = "none";
     document.getElementById("notas-placeholder").style.display = "none";
+    var active = document.getElementsByClassName("active");
+    if(active.length>=1){
+        active[0].classList.remove("active");
+    }
     document.getElementById("change-pass-btn").classList.add("active");
-    //document.getElementById("row-btn").classList.remove("active");
 }
 
 function loadCurso(id_curso) {
@@ -71,39 +61,34 @@ function loadCurso(id_curso) {
 }
 
 function showNotas(id_curso, n_cursos, n_coev) {
-    alert(n_coev);
     document.getElementById("currentCurso").innerHTML = loadCurso(id_curso);
     document.getElementById("cambiar-contrasena").style.display = "none";
     document.getElementById("notas-resumen").style.display = "block";
     document.getElementById("notas-placeholder").style.display = "none";
-    //document.getElementById("row-btn"+id_curso).classList.add("active");
 
-    //alert(id_curso);
+    var active = document.getElementsByClassName("active");
+    if(active.length>=1){
+        active[0].classList.remove("active");
+    }
     for(i = 0; i<= n_cursos; i++){
-        //alert('hola');
+
         for(j = 0; j<=n_coev; j++){
             idval=i+"-"+j;
-            //alert("agregar " + idval);
             if (i === id_curso) {
                 try{
-                    //alert("agregar " + idval);
                     document.getElementById(idval).style.display = "table-row";
-                    document.getElementById("row-btn"+id_curso).classList.add("active");
                 }catch{}
             } else {
-                //alert("remover " + i);
                 try {
                     document.getElementById(idval).style.display = "none";
-                    //document.getElementById("row-btn" + id_curso).classList.remove("active");
+
                 } catch {
                 }
             }
-        //alert("endfor")
         }
     }
+    document.getElementById("row-btn"+id_curso).classList.add("active");
 
-    var changePass = document.getElementById("change-pass-btn");
-    if (changePass !== null) changePass.classList.remove("active");
 }
 
 
