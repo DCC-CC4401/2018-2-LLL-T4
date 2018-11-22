@@ -71,7 +71,7 @@ function loadCurso(id_curso) {
 }
 
 function showNotas(id_curso, n_cursos, n_coev) {
-    //alert(n_coev);
+    alert(n_coev);
     document.getElementById("currentCurso").innerHTML = loadCurso(id_curso);
     document.getElementById("cambiar-contrasena").style.display = "none";
     document.getElementById("notas-resumen").style.display = "block";
