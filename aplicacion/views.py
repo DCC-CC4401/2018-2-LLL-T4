@@ -165,10 +165,11 @@ def curso_docente(request):
             return redirect('login')
         else:
             curso = Curso.objects.get(id=curso_id)
-            lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('-fecha_inicio')
+            lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('fecha_inicio')
             grupos_act = Grupo.objects.filter(curso=curso)
             alum_grup_act = AlumnoGrupo.objects.filter(grupo__in=grupos_act)
-            context = {'user': user, 'curso': curso, 'coevaluaciones':lista_coevs, 'grupos':grupos_act, 'alumnos':alum_grup_act}
+            alum_coev = AlumnoCoevaluacion.objects.filter(coevaluacion__in=lista_coevs)
+            context = {'user': user, 'curso': curso, 'coevaluaciones':lista_coevs, 'grupos':grupos_act, 'alumnos':alum_grup_act, 'alum_coev':alum_coev}
             return render(request, 'curso-vista-docente.html', context)
     else:
         return redirect('login')
