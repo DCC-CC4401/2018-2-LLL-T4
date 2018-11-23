@@ -159,7 +159,7 @@
                                     {% for a_coev in alum_coev %}
                                         {% if coev == a_coev.coevaluacion and alum.alumno == a_coev.alumno %}
                                             <td>
-                                                holi {{ a_coev.nota }}
+                                                {{ a_coev.nota }}
                                             </td>
                                         {% endif %}
                                     {% endfor %}
