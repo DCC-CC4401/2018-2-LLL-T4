@@ -4,6 +4,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
+from django.contrib.auth import update_session_auth_hash
 
 from aplicacion.models import *
 
@@ -124,23 +125,6 @@ def coevaluacionAlumnos_view(request):
     else:
         return redirect('login')
 
-def perfil_view(request):
-    #arreglar, solo puede verlo alumno
-    if request.user.is_authenticated:
-        user = request.user
-        alumno = Alumno.objects.filter(user=user)
-        if not alumno:
-            return redirect('login')
-        else:
-            alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
-            cursos = Curso.objects.filter(id__in=alumnocurso)
-            coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos).order_by('-fecha_inicio')
-            #falta preguntar por las notas
-            context = {'cursos': cursos, 'user': user, 'coevaluaciones': coevaluaciones}
-            return render(request, 'perfil-vista-dueno.html', context)
-    else:
-        return redirect('login')
-
 def curso_alumno(request):
     if request.user.is_authenticated and request.method == 'GET':
         user = request.user
@@ -150,8 +134,10 @@ def curso_alumno(request):
             return redirect('login')
         else:
             curso = Curso.objects.get(id=curso_id)
-            lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('-fecha_inicio')
-            context = {'user': user, 'lista_coevs': lista_coevs, 'curso': curso}
+            coevaluaciones = Coevaluacion.objects.filter(curso=curso)
+            alumnoCoevaluaciones = AlumnoCoevaluacion.objects.filter(alumno=alumno[0], coevaluacion__in=coevaluaciones).order_by('-coevaluacion__fecha_inicio')
+            print(alumnoCoevaluaciones)
+            context = {'user': user, 'alumnoCoevaluaciones': alumnoCoevaluaciones, 'curso': curso}
             return render(request, 'curso-vista-alumno.html', context)
     else:
         return redirect('login')
@@ -171,5 +157,47 @@ def curso_docente(request):
             alum_coev = AlumnoCoevaluacion.objects.filter(coevaluacion__in=lista_coevs)
             context = {'user': user, 'curso': curso, 'coevaluaciones':lista_coevs, 'grupos':grupos_act, 'alumnos':alum_grup_act, 'alum_coev':alum_coev}
             return render(request, 'curso-vista-docente.html', context)
+    else:
+        return redirect('login')
+
+def perfil_view(request):
+    #arreglar, solo puede verlo alumno
+    context = {}
+
+    if request.method == 'POST':
+        user = request.user
+        username = user.username
+        passOld = request.POST.get('passOld')
+        valid = authenticate(request, username=username, password=passOld)
+        if valid is not None:
+            passNew = request.POST.get('passNew')
+            passNewConfirm = request.POST.get('passNewConfirm')
+            if passNew == passNewConfirm:
+                user.set_password(passNew)
+                user.save()
+                update_session_auth_hash(request, user)
+                context.update({'correcto': 'correcto'})
+            else:
+                context.update({'error': 'error'})
+        else:
+            context.update({'error': 'error'})
+
+    if request.user.is_authenticated:
+        user = request.user
+        alumno = Alumno.objects.filter(user=user)
+        if not alumno:
+            return redirect('login')
+        else:
+
+            alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
+            cursos = Curso.objects.filter(id__in=alumnocurso)
+            coevaluaciones = Coevaluacion.objects.filter(curso__in=cursos)
+            alumnoCoevaluaciones = AlumnoCoevaluacion.objects.filter(alumno=alumno[0], coevaluacion__in = coevaluaciones, estado='Publicada').order_by('-coevaluacion__fecha_inicio')
+            print(alumnoCoevaluaciones)
+            n_cursos = cursos.__len__()
+            n_coev = alumnoCoevaluaciones.__len__()
+            context.update ({'cursos': cursos, 'user': user, 'alumnoCoevaluaciones': alumnoCoevaluaciones, 'n_cursos': n_cursos,
+                        'n_coev': n_coev})
+            return render(request, 'perfil-vista-dueno.html', context)
     else:
         return redirect('login')

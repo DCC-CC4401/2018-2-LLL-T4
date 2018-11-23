@@ -91,7 +91,7 @@
                     {% endfor %}
                     {% for companero in companerosNoContestado %}
                         {% if alumnoCoevaluacion.estado == 'Pendiente' %}
-                            <tr class="tr-pendiente">
+                            <tr class="tr-pendiente clickable-row" data-href="/coevaluacionAlumnos/?coevaluacion={{ alumnoCoevaluacion.coevaluacion.id }}&companero={{ companero.alumno.user.id }}">
                                 <td>{{ companero.alumno.user.first_name }} {{ companero.alumno.user.last_name }}</td>
                                 <td class="td-icon"><a
                                         href="/coevaluacionAlumnos/?coevaluacion={{ alumnoCoevaluacion.coevaluacion.id }}&companero={{ companero.alumno.user.id }}"
@@ -194,5 +194,14 @@
     {% endif %}
 </div>
 </body>
+
+<script>
+jQuery(document).ready(function($) {
+    $(".clickable-row").click(function() {
+        window.location = $(this).data("href");
+    });
+});
+</script>
+
 </html>
         
