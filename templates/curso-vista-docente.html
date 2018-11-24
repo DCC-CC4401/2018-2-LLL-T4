@@ -76,7 +76,7 @@
                             <!-- Cuerpo de tabla (Table Data) -->
                             <tbody>
                                 {% for coev in coevaluaciones %}
-                                    {% if coev.estado == "Pendiente" %}
+                                    {% if coev.estado == "Abierta" %}
                                     <tr class="tr-pendiente">
                                         <td class="td-fecha">
                                             {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
@@ -91,7 +91,7 @@
                                             {{ coev.estado }}
                                         </td>
                                         <td class="td-icon">
-                                            <a href="#" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/answer-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a>
+                                            <a href="#" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/config-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a>
                                         </td>
                                     </tr>
                                     {% else %}
@@ -107,6 +107,9 @@
                                         </td>
                                         <td>
                                             {{ coev.estado }}
+                                        </td>
+                                        <td class="td-icon">
+                                            <a href="#" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/submit-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a>
                                         </td>
                                     </tr>
                                     {% endif %}
@@ -141,7 +144,10 @@
                 <table class="table table-coeval-curso table-striped table-hover mb-0 "> <!-- Tabla -->
                     <thead class="thead-light">
                         <tr> <!-- Fila (Table Row) -->
-                            <th class="th-fecha">{{ grup.nombre }}</th>
+                            <th class="td-nombres th-nombre">
+                                {{ grup.nombre }}
+                                <a href="#" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/delete-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a>
+                            </th>
                             {% for coev in coevaluaciones %}
                                 <th>{{ coev.nombre }}</th>
                             {% endfor %}

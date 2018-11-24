@@ -185,6 +185,10 @@ body {
 	font-size: 0.75rem;
 }
 
+.td-nombres {
+	font-size: 1.25rem;
+}
+
 .td-curso-full {
 	line-height: 0.7rem;
 }
@@ -212,6 +216,7 @@ td.td-icon {
 }
 
 .th-fecha {	width: 6.2rem }
+.th-nombre {width: 11.0rem}
 .th-titulo { width: 11.6rem }
 .th-curso {	width: 8.8rem }
 .th-semestre { width: 3.2rem }
