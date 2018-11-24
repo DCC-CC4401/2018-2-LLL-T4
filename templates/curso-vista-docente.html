@@ -211,7 +211,7 @@
                                     alt="Responder coevaluación" width="28"
                                     height="28"></a>
                         </th>
-                        {% for coev in coevaluaciones %}
+                        {% for coev in coevPublicadas %}
                             <th>{{ coev.nombre }}</th>
                         {% endfor %}
                         <th class="th-iconos"></th>
@@ -224,7 +224,7 @@
                                 <td>
                                     {{ alum.alumno.user.first_name }} {{ alum.alumno.user.last_name }}
                                 </td>
-                                {% for coev in coevaluaciones %}
+                                {% for coev in coevPublicadas %}
                                     {% for a_coev in alum_coev %}
                                         {% if coev == a_coev.coevaluacion and alum.alumno == a_coev.alumno %}
                                             <td>

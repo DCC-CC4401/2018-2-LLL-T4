@@ -190,8 +190,9 @@ def curso_docente(request):
                     coevs.estado = 'Cerrada'
             grupos_act = Grupo.objects.filter(curso=curso)
             alum_grup_act = AlumnoGrupo.objects.filter(grupo__in=grupos_act)
-            alum_coev = AlumnoCoevaluacion.objects.filter(coevaluacion__in=lista_coevs)
-            context = {'user': user, 'curso': curso, 'coevaluaciones':lista_coevs, 'grupos':grupos_act, 'alumnos':alum_grup_act, 'alum_coev':alum_coev, 'docenteCurso':docenteCurso[0]}
+            lista_coevs_pubicadas = lista_coevs.filter(estado='Publicada')
+            alum_coev = AlumnoCoevaluacion.objects.filter(coevaluacion__in=lista_coevs_pubicadas)
+            context = {'user': user, 'curso': curso, 'coevaluaciones':lista_coevs, 'grupos':grupos_act, 'alumnos':alum_grup_act, 'alum_coev':alum_coev, 'docenteCurso':docenteCurso[0], 'coevPublicadas':lista_coevs_pubicadas}
             return render(request, 'curso-vista-docente.html', context)
     else:
         return redirect('login')
