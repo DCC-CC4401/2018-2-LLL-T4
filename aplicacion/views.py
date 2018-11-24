@@ -92,8 +92,11 @@ def coevaluacionAlumnos_view(request):
         if not alumno:
             return redirect('login')
         else:
-            alumnoCoevaluacion = AlumnoCoevaluacion.objects.get(alumno=alumno[0], coevaluacion=coevaluacion)
+            alumnoCurso = AlumnoCurso.objects.filter(alumno=alumno[0], curso=curso)
+            if not alumnoCurso:
+                return redirect('landingpagealumnos')
 
+            alumnoCoevaluacion = AlumnoCoevaluacion.objects.get(alumno=alumno[0], coevaluacion=coevaluacion)
             grupos = Grupo.objects.filter(curso=curso)
             alumnosCoevaluados = AutorAlumnoCoevaluacion.objects.filter(autor=alumno[0], coevaluacion=coevaluacion).values('alumno_id')
             grupo = AlumnoGrupo.objects.get(alumno=alumno[0], grupo__in=grupos, pertenece=True).grupo
