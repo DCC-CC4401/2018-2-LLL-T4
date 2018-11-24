@@ -125,7 +125,7 @@
             	<a href="#" class="small" title="Cargar información desde archivo">Cargar archivo...</a>
             </div>
 			<hr/>
-            <div class="row col-sm-12">
+            <div class="row col-sm-12 justify-content-center">
                 <form class="nav-link form-inline my-2 my-lg-0">
                         <input class="form-control" type="search" placeholder="Buscar alumno..." aria-label="Buscar alumno">
                 </form>
@@ -135,9 +135,9 @@
                 <button type="button" id="add-coev-btn" class="btn btn-primary-custom float-left my-1">Agregar Equipo</button>
             </div>
 
-            <div class="col-md-6">
+            <div class="row">
             {% for grup in grupos %}
-                <div class="table-wrap table-responsive my-1"> <!-- "Envoltura" de la tabla -->
+                <div class="table-wrap table-responsive my-1 col-md-6"> <!-- "Envoltura" de la tabla -->
                 <table class="table table-coeval-curso table-striped table-hover mb-0 "> <!-- Tabla -->
                     <thead class="thead-light">
                         <tr> <!-- Fila (Table Row) -->
