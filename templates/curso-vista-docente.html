@@ -1,158 +1,221 @@
-
 {% load static %}
 
 
 <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css'%}"/>
-        <link rel="stylesheet" href="{% static 'css/coeval.css'%}"/>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-        <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
-        <script src="{% static 'js/bootstrap.min.js'%}"></script>
-        <script src="{% static 'js/coeval.js'%}"></script>
-        <title>Sistema de Coevaluaciones DCC</title>
-    </head>
-    <body>
-        <!-- Barra superior -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5 py-3">
-            <a class="navbar-brand" href="#">Sistema de Coevaluaciones DCC</a>
-            <!-- Al achicar la pantalla, el menú se oculta y se vuelve desplegable mediante este botón. -->
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+    <link rel="stylesheet" href="{% static 'css/coeval.css' %}"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/coeval.js' %}"></script>
+    <title>Sistema de Coevaluaciones DCC</title>
+</head>
+<body>
+<!-- Barra superior -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-5 py-3">
+    <a class="navbar-brand" href="/">Sistema de Coevaluaciones DCC</a>
+    <!-- Al achicar la pantalla, el menú se oculta y se vuelve desplegable mediante este botón. -->
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon">
                     <i class="fa fa-navicon"></i>
                 </span>
+    </button>
+
+    <!-- Menú superior-derecha -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+            <form class="nav-link form-inline my-2 my-lg-0">
+                <input class="form-control" type="search" placeholder="Buscar alumno..." aria-label="Buscar alumno">
+            </form>
+            <li class="divider-vertical"></li>
+            <li class="nav-item">
+                <a class="nav-link" href="/perfil">{{ user.first_name }} {{ user.last_name }}</a>
+            </li>
+            <li class="divider-vertical"></li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout">Cerrar Sesión</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<!-- FIN Barra superior -->
+
+<!-- Cuerpo -->
+<div class="container"> <!-- Contenedor responsivo de Bootstrap, se adapta a la pantalla usando columnas. -->
+
+    <h3 class="d-inline-block page-title">Ficha de Curso</h3>
+    <h5 class="mb-3">
+        {% if docenteCurso.tipo == 'Docente' %}
+            <div class="cargos cargos-profesor"></div>
+        {% elif docenteCurso.tipo == 'Auxiliar' %}
+            <div class="cargos cargos-auxiliar"></div>
+        {% elif docenteCurso.tipo == 'Ayudante' %}
+            <div class="cargos cargos-ayudante"></div>
+        {% endif %}
+        {{ curso.datos.codigo }}-{{ curso.seccion }} {{ curso.datos.nombre }} {{ curso.ano }}, {{ curso.semestre }}
+        {# Ojo, quizas seria mejor hacer una conversion entre el nro y el nombre del semestre #}
+    </h5>
+    <hr/>
+    <!-- Tablas de resumen -->
+    <div class="row">
+        <!-- Tabla de coevaluaciones -->
+        <div class="col-md-10 offset-1 mb-5">
+            <h4 class="d-inline-block mt-1">Coevaluaciones del curso</h4>
+
+            <button type="button" class="btn btn-primary-custom float-right" data-toggle="modal"
+                    data-target="#idTarget">Agregar
+                Coevaluación
             </button>
+            <div class="modal fade" id="idTarget">
 
-            <!-- Menú superior-derecha -->
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav ml-auto">
-                    <form class="nav-link form-inline my-2 my-lg-0">
-                        <input class="form-control" type="search" placeholder="Buscar alumno..." aria-label="Buscar alumno">
-                    </form>
-                    <li class="divider-vertical"></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">{{ user.first_name }} {{ user.last_name }}</a>
-                    </li>
-                    <li class="divider-vertical"></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Cerrar Sesión</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-        <!-- FIN Barra superior -->
-
-        <!-- Cuerpo -->
-        <div class="container"> <!-- Contenedor responsivo de Bootstrap, se adapta a la pantalla usando columnas. -->
-
-            <h3 class="d-inline-block page-title">Ficha de Curso</h3>
-            <h5 class="mb-3">
-                <div class="cargos cargos-profesor"></div>
-                {{ curso.datos.codigo }}-{{ curso.seccion }} {{ curso.datos.nombre }} {{ curso.ano }}, {{ curso.semestre }} {# Ojo, quizas seria mejor hacer una conversion entre el nro y el nombre del semestre #}
-            </h5>
-            <hr/>
-            <!-- Tablas de resumen -->
-            <div class="row">
-                <!-- Tabla de coevaluaciones -->
-                <div class="col-md-10 offset-1 mb-5">
-            		<h4 class="d-inline-block mt-1">Coevaluaciones del curso</h4>
-                    <button type="button" id="add-coev-btn" class="btn btn-primary-custom float-right">Agregar coevaluación</button>
-
-                    <div class="table-wrap table-responsive my-1"> <!-- "Envoltura" de la tabla -->
-                        <table class="table table-coeval-curso table-striped table-hover mb-0"> <!-- Tabla -->
-                            <!-- Encabezados de tabla (Table Headers) -->
-                            <thead class="thead-light">
-                                <tr> <!-- Fila (Table Row) -->
-                                    <th class="th-fecha" sort>Fecha inicio</th>
-                                    <th class="th-titulo">Nombre</th>
-                                    <th class="th-fecha">Fecha límite</th>
-                                    <th class="th-estado">Estado</th>
-                                    <th class="th-iconos"></th>
-                                </tr>
-                            </thead>
-
-                            <!-- Cuerpo de tabla (Table Data) -->
-                            <tbody>
-                                {% for coev in coevaluaciones %}
-                                    {% if coev.estado == "Abierta" %}
-                                    <tr class="tr-pendiente">
-                                        <td class="td-fecha">
-                                            {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
-                                        </td>
-                                        <td>
-                                            {{ coev.nombre }}
-                                        </td>
-                                        <td class="td-fecha">
-                                            {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
-                                        </td>
-                                        <td>
-                                            {{ coev.estado }}
-                                        </td>
-                                        <td class="td-icon">
-                                            <a href="#" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/config-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a>
-                                        </td>
-                                    </tr>
-                                    {% else %}
-                                        <tr>
-                                        <td class="td-fecha">
-                                            {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
-                                        </td>
-                                        <td>
-                                            {{ coev.nombre }}
-                                        </td>
-                                        <td class="td-fecha">
-                                            {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
-                                        </td>
-                                        <td>
-                                            {{ coev.estado }}
-                                        </td>
-                                        <td class="td-icon">
-                                            <a href="#" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/submit-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a>
-                                        </td>
-                                    </tr>
-                                    {% endif %}
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                <!-- PopUp Agregar Coevaluacion-->
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <!--Header-->
+                            <div class="modal-header">
+                                <h3 class="modal-title">Agregar Coevaluación</h3>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <!--Body(form)-->
+                            <div class="modal-body">
+                                <div>
+                                    Nombre Coevaluación:
+                                    <input class="form-control mr-sm-2" name="nombreCoevaluacion" type="text" placeholder="Nombre de la Coevaluación" required>
+                                </div>
+                                <div>
+                                    Fecha de Entrega:
+                                    <input class="form-control mr-sm-2" type="date" name="fechaEntrega" required>
+                                </div>
+                                <div>
+                                    Hora de Entrega:
+                                    <input class="form-control mr-sm-2" type="time" name="horaEntrega" required>
+                                </div>
+                            </div>
+                            <!--Button-->
+                            <div class="modal-footer">
+                                <button class="btn btn-primary-custom btn-block">Confirmar</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            	<!-- FIN Tabla de coevaluaciones -->
-            </div>
-            <!-- FIN Tablas de resumen -->
-
-            <!-- Gestión del curso -->
-			<h4 class="d-inline-block mt-1 mb-0">Gestión del Curso</h4>
-			<div class="d-inline-block ml-2">
-            	<a href="#" class="small" title="Cargar información desde archivo">Cargar archivo...</a>
-            </div>
-			<hr/>
-            <div class="row col-sm-12 justify-content-center">
-                <form class="nav-link form-inline my-2 my-lg-0">
-                        <input class="form-control" type="search" placeholder="Buscar alumno..." aria-label="Buscar alumno">
                 </form>
-                <button type="button" id="add-coev-btn" class="btn btn-primary-custom my-1">Agregar Alumno</button>
-            </div>
-            <div class="row col-sm-12">
-                <button type="button" id="add-coev-btn" class="btn btn-primary-custom float-left my-1">Agregar Equipo</button>
             </div>
 
-            <div class="row">
-            {% for grup in grupos %}
-                <div class="table-wrap table-responsive my-1 col-md-6"> <!-- "Envoltura" de la tabla -->
+
+            <div class="table-wrap table-responsive my-1"> <!-- "Envoltura" de la tabla -->
+                <table class="table table-coeval-curso table-striped table-hover mb-0"> <!-- Tabla -->
+                    <!-- Encabezados de tabla (Table Headers) -->
+                    <thead class="thead-light">
+                    <tr> <!-- Fila (Table Row) -->
+                        <th class="th-fecha" sort>Fecha inicio</th>
+                        <th class="th-titulo">Nombre</th>
+                        <th class="th-fecha">Fecha límite</th>
+                        <th class="th-estado">Estado</th>
+                        <th class="th-iconos"></th>
+                    </tr>
+                    </thead>
+
+                    <!-- Cuerpo de tabla (Table Data) -->
+                    <tbody>
+                    {% for coev in coevaluaciones %}
+                        {% if coev.estado == "Abierta" %}
+                            <tr class="tr-pendiente">
+                                <td class="td-fecha">
+                                    {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
+                                </td>
+                                <td>
+                                    {{ coev.nombre }}
+                                </td>
+                                <td class="td-fecha">
+                                    {{ coev.fecha_fin |date:"H:i d/m/Y" }}
+                                </td>
+                                <td>
+                                    {{ coev.estado }}
+                                </td>
+                                <td class="td-icon">
+                                    <a href="#" title="Responder coevaluación"><img
+                                            class="clickable-icon answer-icon wiggle"
+                                            src="{% static 'icon/config-icon.png' %}"
+                                            alt="Responder coevaluación"
+                                            width="28" height="28"></a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td class="td-fecha">
+                                    {{ coev.fecha_inicio |date:"H:i d/m/Y" }}
+                                </td>
+                                <td>
+                                    {{ coev.nombre }}
+                                </td>
+                                <td class="td-fecha">
+                                    {{ coev.fecha_fin |date:"H:i d/m/Y" }}
+                                </td>
+                                <td>
+                                    {{ coev.estado }}
+                                </td>
+                                <td class="td-icon">
+                                    <a href="#" title="Responder coevaluación"><img
+                                            class="clickable-icon answer-icon wiggle"
+                                            src="{% static 'icon/submit-icon.png' %}"
+                                            alt="Responder coevaluación"
+                                            width="28" height="28"></a>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- FIN Tabla de coevaluaciones -->
+    </div>
+    <!-- FIN Tablas de resumen -->
+
+    <!-- Gestión del curso -->
+    <h4 class="d-inline-block mt-1 mb-0">Gestión del Curso</h4>
+    <div class="d-inline-block ml-2">
+        <a href="#" class="small" title="Cargar información desde archivo">Cargar archivo...</a>
+    </div>
+    <hr/>
+    <div class="row col-sm-12 justify-content-center">
+        <form class="nav-link form-inline my-2 my-lg-0">
+            <input class="form-control" type="search" placeholder="Buscar alumno..."
+                   aria-label="Buscar alumno">
+        </form>
+        <button type="button" id="add-coev-btn" class="btn btn-primary-custom my-1">Agregar Alumno
+        </button>
+    </div>
+    <div class="row col-sm-12">
+        <button type="button" id="add-coev-btn" class="btn btn-primary-custom float-left my-1">Agregar
+            Equipo
+        </button>
+    </div>
+
+    <div class="row">
+        {% for grup in grupos %}
+            <div class="table-wrap table-responsive my-1 col-md-6"> <!-- "Envoltura" de la tabla -->
                 <table class="table table-coeval-curso table-striped table-hover mb-0 "> <!-- Tabla -->
                     <thead class="thead-light">
-                        <tr> <!-- Fila (Table Row) -->
-                            <th class="td-nombres th-nombre">
-                                {{ grup.nombre }}
-                                <a href="#" title="Responder coevaluación"><img class="clickable-icon answer-icon wiggle" src="{% static 'icon/delete-icon.png'%}" alt="Responder coevaluación" width="28" height="28"></a>
-                            </th>
-                            {% for coev in coevaluaciones %}
-                                <th>{{ coev.nombre }}</th>
-                            {% endfor %}
-                            <th class="th-iconos"></th>
-                        </tr>
+                    <tr> <!-- Fila (Table Row) -->
+                        <th class="td-nombres th-nombre">
+                            {{ grup.nombre }}
+                            <a href="#" title="Responder coevaluación"><img
+                                    class="clickable-icon answer-icon wiggle"
+                                    src="{% static 'icon/delete-icon.png' %}"
+                                    alt="Responder coevaluación" width="28"
+                                    height="28"></a>
+                        </th>
+                        {% for coev in coevaluaciones %}
+                            <th>{{ coev.nombre }}</th>
+                        {% endfor %}
+                        <th class="th-iconos"></th>
+                    </tr>
                     </thead>
                     <tbody>
                     {% for alum in alumnos %}
@@ -175,10 +238,13 @@
                     {% endfor %}
                     </tbody>
                 </table>
-                </div>
-            {% endfor %}
             </div>
-        </div>
-    </body>
-    </html>
-        
+        {% endfor %}
+    </div>
+</div>
+
+
+</body>
+
+</html>
+
