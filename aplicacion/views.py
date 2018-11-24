@@ -134,6 +134,9 @@ def curso_alumno(request):
             return redirect('login')
         else:
             curso = Curso.objects.get(id=curso_id)
+            alumnoCurso = AlumnoCurso.objects.filter(alumno=alumno[0], curso =curso)
+            if not alumnoCurso:
+                return redirect('landingpagealumnos')
             coevaluaciones = Coevaluacion.objects.filter(curso=curso)
             alumnoCoevaluaciones = AlumnoCoevaluacion.objects.filter(alumno=alumno[0], coevaluacion__in=coevaluaciones).order_by('-coevaluacion__fecha_inicio')
             print(alumnoCoevaluaciones)
@@ -151,6 +154,9 @@ def curso_docente(request):
             return redirect('login')
         else:
             curso = Curso.objects.get(id=curso_id)
+            docenteCurso = DocenteCurso.objects.filter(docente=docente[0], curso=curso)
+            if not docenteCurso:
+                return redirect('landingpagealumnos')
             lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('fecha_inicio')
             grupos_act = Grupo.objects.filter(curso=curso)
             alum_grup_act = AlumnoGrupo.objects.filter(grupo__in=grupos_act)
