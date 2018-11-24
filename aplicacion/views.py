@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from django.contrib.auth import update_session_auth_hash
+import datetime
 
 from aplicacion.models import *
 
@@ -149,7 +150,30 @@ def curso_alumno(request):
         return redirect('login')
 
 def curso_docente(request):
-    if request.user.is_authenticated and request.method == 'GET':
+    if request.user.is_authenticated and request.method == 'POST':
+        user = request.user
+        docente = Docente.objects.filter(user=user)
+        curso_id = request.GET.get('curso')
+        curso = Curso.objects.get(id=curso_id)
+        nombreCoevaluacion = request.POST.get('nombreCoevaluacion')
+        fecha = request.POST.get('fechaEntrega')
+        hora = request.POST.get('horaEntrega')
+
+        fecha_objeto = datetime.datetime.strptime(fecha, "%Y-%m-%d").date()
+        hora_objeto = datetime.datetime.strptime(hora,'%H:%M').time()
+        fecha_fin = datetime.datetime.combine(fecha_objeto,hora_objeto)
+
+        coevaluacion = Coevaluacion(nombre=nombreCoevaluacion, fecha_inicio=timezone.now(),
+                                    fecha_fin=fecha_fin, curso=curso, estado='Abierta')
+        coevaluacion.save()
+        alumnoCursos = AlumnoCurso.objects.filter(curso=curso)
+        for alumnoCurso in alumnoCursos:
+            alumno = alumnoCurso.alumno
+            alumnoCoevaluacion =AlumnoCoevaluacion(alumno=alumno, coevaluacion=coevaluacion, estado='Pendiente')
+            alumnoCoevaluacion.save()
+        createPreguntas(coevaluacion)
+        return HttpResponseRedirect("")
+    elif request.user.is_authenticated and request.method == 'GET':
         user = request.user
         curso_id = request.GET.get('curso')
         docente = Docente.objects.filter(user=user)
@@ -161,10 +185,13 @@ def curso_docente(request):
             if not docenteCurso:
                 return redirect('landingpagealumnos')
             lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('fecha_inicio')
+            for coevs in lista_coevs:
+                if coevs.fecha_fin <= timezone.now() and coevs.estado == 'Abierta':
+                    coevs.estado = 'Cerrada'
             grupos_act = Grupo.objects.filter(curso=curso)
             alum_grup_act = AlumnoGrupo.objects.filter(grupo__in=grupos_act)
             alum_coev = AlumnoCoevaluacion.objects.filter(coevaluacion__in=lista_coevs)
-            context = {'user': user, 'curso': curso, 'coevaluaciones':lista_coevs, 'grupos':grupos_act, 'alumnos':alum_grup_act, 'alum_coev':alum_coev}
+            context = {'user': user, 'curso': curso, 'coevaluaciones':lista_coevs, 'grupos':grupos_act, 'alumnos':alum_grup_act, 'alum_coev':alum_coev, 'docenteCurso':docenteCurso[0]}
             return render(request, 'curso-vista-docente.html', context)
     else:
         return redirect('login')
@@ -210,3 +237,55 @@ def perfil_view(request):
             return render(request, 'perfil-vista-dueno.html', context)
     else:
         return redirect('login')
+
+def createPreguntas(coevaluacion):
+    pregunta1 = Pregunta(descripcion="Demuestra compromiso con el proyecto",
+                         tipo='Multiple',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0.8)
+    pregunta1.save()
+    pregunta2 = Pregunta(descripcion="Cumple de manera adecuada con las tareas que le son asignadas",
+                         tipo='Multiple',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0.8)
+    pregunta2.save()
+    pregunta3 = Pregunta(descripcion="Demuestra iniciativa para lograr el éxito del proyecto",
+                         tipo='Multiple',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0.8)
+    pregunta3.save()
+    pregunta4 = Pregunta(descripcion="Mantiene buena comunicación con el resto del equipo",
+                         tipo='Multiple',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0.8)
+    pregunta4.save()
+    pregunta5 = Pregunta(descripcion="Mantiene buena coordinación entre sus tareas y las de sus pares",
+                         tipo='Multiple',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0.8)
+    pregunta5.save()
+    pregunta6 = Pregunta(descripcion="La calidad de su trabajo es la apropiada para lograr el éxito del proyecto. ",
+                         tipo='Multiple',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0.8)
+    pregunta6.save()
+    pregunta7 = Pregunta(descripcion="Ofrece apoyo en las tareas que van más allá del rol asignado",
+                         tipo='Multiple',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0.8)
+    pregunta7.save()
+    pregunta8 = Pregunta(descripcion="Es capaz de admitir sus equivocaciones y recibir críticas",
+                         tipo='Multiple',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0.8)
+    pregunta8.save()
+    pregunta9 = Pregunta(descripcion="Fortalezas",
+                         tipo='Desarrollo',
+                         coevaluacion=coevaluacion,
+                         ponderacion=0)
+    pregunta9.save()
+    pregunta10 = Pregunta(descripcion="Debilidades",
+                          tipo='Desarrollo',
+                          coevaluacion=coevaluacion,
+                          ponderacion=0)
+    pregunta10.save()
