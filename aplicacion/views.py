@@ -32,7 +32,7 @@ def landingPageAlumnos_view(request):
             return redirect('login')
         else:
             alumnocurso = AlumnoCurso.objects.filter(alumno=alumno[0]).values('curso_id')
-            cursos = Curso.objects.filter(id__in=alumnocurso)
+            cursos = Curso.objects.filter(id__in=alumnocurso).order_by('-ano', '-semestre')
             alumnoCoevaluaciones = AlumnoCoevaluacion.objects.filter(alumno=alumno[0]).order_by('-coevaluacion__fecha_inicio')[:10]
 
             context = {'cursos': cursos, 'user': user, 'alumnoCoevaluaciones': alumnoCoevaluaciones}
@@ -184,7 +184,7 @@ def curso_docente(request):
             docenteCurso = DocenteCurso.objects.filter(docente=docente[0], curso=curso)
             if not docenteCurso:
                 return redirect('landingpagealumnos')
-            lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('fecha_inicio')
+            lista_coevs = Coevaluacion.objects.filter(curso=curso).order_by('-fecha_inicio')
             for coevs in lista_coevs:
                 if coevs.fecha_fin <= timezone.now() and coevs.estado == 'Abierta':
                     coevs.estado = 'Cerrada'
